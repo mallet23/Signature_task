@@ -10,48 +10,88 @@ namespace Task_Signature
 {
     class MultiThreadHashing
     {
+        /// <summary>
+        /// Стандартный размер блока (1 Мб)
+        /// </summary>
+        public static readonly int DEFAULT_BLOCK_LENGHT = 1024;
+
+        /// <summary>
+        /// Путь к файлу
+        /// </summary>
         public string filePath { get; private set; }
-        int _curentBlock = 0;
-        public long blockLength { get; private set; }
+
+        /// <summary>
+        /// Размер блока
+        /// </summary>
+        public int blockLength { get; private set; }
+
+        /// <summary>
+        /// Количество процессоров
+        /// </summary>
+        public int processorCount { get; private set; }
+
+        // Количество блоков        
         int blockCount;
+        // Текущий блок
+        int _curentBlock = 0;
+        // Массив Хешей
         string[] hashes;
+        // Блокиратор для _curentBlock
+        object Lock = new object();
 
-        public int processorCount = 1;
+        #region Constructors
+        /// <summary>
+        /// Мультипоточное хеширование с использованием
+        ///     процессов равных количеству логических процессоров
+        /// </summary>
+        /// <param name="filePath_">Путь к файлу</param>
+        public MultiThreadHashing(string filePath_) :
+            this(filePath_, DEFAULT_BLOCK_LENGHT) { }
 
-        ProducerConsumerQueue queue = new ProducerConsumerQueue();
-
-
-
-        public MultiThreadHashing(string filePath_, int blockLenght_ = 102400, int processorCount_ = 0)
+        /// <summary>
+        /// Мультипоточное хеширование с использованием
+        ///     процессов равных количеству логических процессоров
+        /// </summary>
+        /// <param name="filePath_">Путь к файлу</param>
+        /// <param name="blockLenght_">Размер блока</param>
+        public MultiThreadHashing(string filePath_,
+            int blockLenght_ ) :
+            this(filePath_, 0, blockLenght_)
         {
-            
-
-            filePath = filePath_;
-            blockLength = blockLenght_;
-            using (FileStream stream = new FileStream(filePath, FileMode.Open))
-            {
-                blockCount = (int)(stream.Length / blockLenght_);
-            }
-
-            if (processorCount_ < 0)
-            {
-                processorCount = (Environment.ProcessorCount > blockCount ? 
+            processorCount = (Environment.ProcessorCount > blockCount ?
                     blockCount : Environment.ProcessorCount);
-            }
-            else
-            {
-                processorCount = processorCount_;
-            }
-
-            Console.WriteLine("Количество болков" + blockCount.ToString());
-            hashes = new string[blockCount];
-
-            if (!File.Exists(filePath))
-            {
-                throw new Exception("File is not exist!");
-            }
         }
 
+        /// <summary>
+        /// Мультипоточное хеширование
+        /// </summary>
+        /// <param name="filePath_">Путь к файлу</param>
+        /// <param name="processCount_">Количество дополнительно создаваемых процессов</param>
+        /// <param name="blockLenght_">Размер блока</param>        
+        public MultiThreadHashing(string filePath_,
+            int processCount_,
+            int blockLenght_)
+        {
+            var file = new FileInfo(filePath_);
+            if (!file.Exists)
+            {
+                throw new Exception("Файл не найден!");
+            }
+            blockCount = (int)(Math.Ceiling((double)file.Length / blockLenght_));
+            filePath = filePath_;           
+
+            if (processCount_ < 0)
+            {
+                throw new Exception("Количество процессов не может быть меньше 0!"); ;
+            }
+            processorCount = processCount_;
+
+            blockLength = blockLenght_;
+            Console.WriteLine("Количество блоков" + blockCount.ToString());
+            hashes = new string[blockCount];
+        }
+
+        #endregion
 
 
         public string[] ComputeHash()
@@ -59,8 +99,6 @@ namespace Task_Signature
             using (FileStream stream = new FileStream(filePath, FileMode.Open,
                 FileAccess.Read, FileShare.Read))
             {
-                
-
                 Thread[] thread = new Thread[processorCount];
 
                 for (int j = 0; j < processorCount; j++)
@@ -80,21 +118,13 @@ namespace Task_Signature
 
         }
 
-        object Lock = new object();
+
         void ThreadWork()
         {
-            byte[] buffer;
-            byte[] oldBuffer;
-            int bytesRead;
-            int oldBytesRead;
-            long totalBytesRead = 0;
-            
-            int lenght = (int)(blockLength / 1024);
-            //   int i = 0;
-
             using (FileStream stream = new FileStream(filePath, FileMode.Open,
                 FileAccess.Read, FileShare.Read))
             {
+                var hashAlgorithm = new BlockHasher();
                 do
                 {
                     int currentBlock = 0;
@@ -105,40 +135,10 @@ namespace Task_Signature
                         currentBlock = _curentBlock;
                         _curentBlock++;
                     }
-                    stream.Position = currentBlock * blockLength;
+                    stream.Position = (long)currentBlock * blockLength;
 
-                    using (HashAlgorithm hashAlgorithm = MD5.Create())
-                    {
+                    hashes[currentBlock] = hashAlgorithm.ComputeStringHash(stream, blockLength);
 
-
-                        buffer = new byte[1024];
-
-                        bytesRead = stream.Read(buffer, 0, buffer.Length);
-                        totalBytesRead += bytesRead;
-                        for (int i = 0; i < lenght; i++)
-                        {
-                            oldBytesRead = bytesRead;
-                            oldBuffer = buffer;
-
-                            buffer = new byte[1024];
-                            bytesRead = stream.Read(buffer, 0, buffer.Length);
-
-                            totalBytesRead += bytesRead;
-
-                            if (i == lenght - 1)
-                            {
-                                hashAlgorithm.TransformFinalBlock(oldBuffer, 0, oldBytesRead);
-                            }
-                            else
-                            {
-                                hashAlgorithm.TransformBlock(oldBuffer, 0, oldBytesRead, oldBuffer, 0);
-                            }
-                        }
-                        string result = BitConverter.ToString(hashAlgorithm.Hash).Replace("-", String.Empty);
-                        hashes[currentBlock] = Thread.CurrentThread.Name + " выводит " + result;
-               //         Console.WriteLine(hashes[currentBlock]);
-                  //      Console.WriteLine(currentBlock);
-                    }
                 } while (_curentBlock < blockCount);
             }
 

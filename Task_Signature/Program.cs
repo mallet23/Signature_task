@@ -38,7 +38,7 @@ namespace Task_Signature
             string elapsedTime;
 
             // single 
-            MultiThreadHashing hash1 = new MultiThreadHashing(path);
+            MultiThreadHashing hash1 = new MultiThreadHashing(path, 0, 102400);
 
             Stopwatch stopWatch1 = new Stopwatch();
             stopWatch1.Start();
@@ -52,7 +52,7 @@ namespace Task_Signature
             Console.WriteLine("Speed " + hash1.processorCount + " : " + elapsedTime);
 
             // 2
-            MultiThreadHashing hash2 = new MultiThreadHashing(path, 102400, 2);
+            MultiThreadHashing hash2 = new MultiThreadHashing(path, 2, 102400);
 
             Stopwatch stopWatch2 = new Stopwatch();
             stopWatch2.Start();
@@ -65,26 +65,26 @@ namespace Task_Signature
             ts.Milliseconds / 10);
             Console.WriteLine("Speed " + hash2.processorCount + " : " + elapsedTime);
 
-            // 4
-            MultiThreadHashing hash4 = new MultiThreadHashing(path, 102400, 4);
+            //// 4
+            //MultiThreadHashing hash4 = new MultiThreadHashing(path, 102400, 4);
 
-            Stopwatch stopWatch4 = new Stopwatch();
-            stopWatch4.Start();
-            hash4.ComputeHash();
-            stopWatch4.Stop();
+            //Stopwatch stopWatch4 = new Stopwatch();
+            //stopWatch4.Start();
+            //hash4.ComputeHash();
+            //stopWatch4.Stop();
 
-            ts = stopWatch4.Elapsed;
-            elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
-            ts.Hours, ts.Minutes, ts.Seconds,
-            ts.Milliseconds / 10);
-            Console.WriteLine("Speed " + hash4.processorCount + " : " + elapsedTime);
+            //ts = stopWatch4.Elapsed;
+            //elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+            //ts.Hours, ts.Minutes, ts.Seconds,
+            //ts.Milliseconds / 10);
+            //Console.WriteLine("Speed " + hash4.processorCount + " : " + elapsedTime);
 
-            //   Hash.ComputeFilesMD5(path);
+            ////   Hash.ComputeFilesMD5(path);
 
-            // 8
+            // Auto
             Stopwatch stopWatch = new Stopwatch();
 
-            MultiThreadHashing hash = new MultiThreadHashing(path, 102400, -1);
+            MultiThreadHashing hash = new MultiThreadHashing(path, 102400);
 
             stopWatch.Start();
             hash.ComputeHash();
@@ -99,7 +99,7 @@ namespace Task_Signature
             // 16
             Stopwatch stopWatch16 = new Stopwatch();
 
-            MultiThreadHashing hash16 = new MultiThreadHashing(path, 102400, 16);
+            MultiThreadHashing hash16 = new MultiThreadHashing(path, 16, 102400);
 
             stopWatch16.Start();
             hash16.ComputeHash();
@@ -114,7 +114,7 @@ namespace Task_Signature
             // 32
             Stopwatch stopWatch32 = new Stopwatch();
 
-            MultiThreadHashing hash32 = new MultiThreadHashing(path, 102400, 32);
+            MultiThreadHashing hash32 = new MultiThreadHashing(path, 32, 102400);
 
             stopWatch32.Start();
             hash32.ComputeHash();
@@ -125,9 +125,9 @@ namespace Task_Signature
             ts.Hours, ts.Minutes, ts.Seconds,
             ts.Milliseconds / 10);
             Console.WriteLine("Speed " + hash32.processorCount + " : " + elapsedTime);
-            
-            //for (int i = 0; i < result.Length; i++  )
-            //    Console.WriteLine"N" + i + " : "+(result[i]);
+
+            //for (int i = 0; i < result.Length; i++)
+            //    Console.WriteLine("N" + i + " : " + result[i]);
 
 
           //  var result = g.BackgroundWorker_DoWork(path);// g.BackgroundWorker_DoWork(path);
