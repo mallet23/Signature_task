@@ -13,7 +13,8 @@ namespace Task_Signature
     {
         static void Main(string[] args)
         {
-           
+        //    Console.CancelKeyPress += new ConsoleCancelEventHandler(Interrupt);
+
             Console.WriteLine("Enter path:");
             var path = Console.ReadLine();
             Console.WriteLine("Enter block size (bytes):");
