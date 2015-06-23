@@ -30,95 +30,103 @@ namespace Task_Signature
             TimeSpan ts;
             string elapsedTime;
 
-            // single 
-            MultiThreadHashing hash1 = new MultiThreadHashing(path, 0, blockSize);
+            try
+            {
 
-            Stopwatch stopWatch1 = new Stopwatch();
-            stopWatch1.Start();
-            hash1.ComputeHash();
-            stopWatch1.Stop();
+                // single 
+                MultiThreadHashing hash1 = new MultiThreadHashing(path, 0, blockSize);
 
-            ts = stopWatch1.Elapsed;
-            elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
-            ts.Hours, ts.Minutes, ts.Seconds,
-            ts.Milliseconds / 10);
-            Console.WriteLine("Speed " + hash1.processorCount + " : " + elapsedTime);
+                Stopwatch stopWatch1 = new Stopwatch();
+                stopWatch1.Start();
+                hash1.ComputeHash();
+                stopWatch1.Stop();
 
-            // 2
-            MultiThreadHashing hash2 = new MultiThreadHashing(path, 1, blockSize);
+                ts = stopWatch1.Elapsed;
+                elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                ts.Hours, ts.Minutes, ts.Seconds,
+                ts.Milliseconds / 10);
+                Console.WriteLine("Speed " + hash1.processorCount + " : " + elapsedTime);
 
-            Stopwatch stopWatch2 = new Stopwatch();
-            stopWatch2.Start();
-            hash2.ComputeHash();
-            stopWatch2.Stop();
+                // 2
+                MultiThreadHashing hash2 = new MultiThreadHashing(path, 1, blockSize);
 
-            ts = stopWatch2.Elapsed;
-            elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
-            ts.Hours, ts.Minutes, ts.Seconds,
-            ts.Milliseconds / 10);
-            Console.WriteLine("Speed " + hash2.processorCount + " : " + elapsedTime);
+                Stopwatch stopWatch2 = new Stopwatch();
+                stopWatch2.Start();
+                hash2.ComputeHash();
+                stopWatch2.Stop();
 
-            // 4
-            MultiThreadHashing hash4 = new MultiThreadHashing(path, 3, 102400);
+                ts = stopWatch2.Elapsed;
+                elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                ts.Hours, ts.Minutes, ts.Seconds,
+                ts.Milliseconds / 10);
+                Console.WriteLine("Speed " + hash2.processorCount + " : " + elapsedTime);
 
-            Stopwatch stopWatch4 = new Stopwatch();
-            stopWatch4.Start();
-            hash4.ComputeHash();
-            stopWatch4.Stop();
+                // 4
+                MultiThreadHashing hash4 = new MultiThreadHashing(path, 3, 102400);
 
-            ts = stopWatch4.Elapsed;
-            elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
-            ts.Hours, ts.Minutes, ts.Seconds,
-            ts.Milliseconds / 10);
-            Console.WriteLine("Speed " + hash4.processorCount + " : " + elapsedTime);
+                Stopwatch stopWatch4 = new Stopwatch();
+                stopWatch4.Start();
+                hash4.ComputeHash();
+                stopWatch4.Stop();
 
-            // Auto
-            Stopwatch stopWatch = new Stopwatch();
+                ts = stopWatch4.Elapsed;
+                elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                ts.Hours, ts.Minutes, ts.Seconds,
+                ts.Milliseconds / 10);
+                Console.WriteLine("Speed " + hash4.processorCount + " : " + elapsedTime);
 
-            MultiThreadHashing hash = new MultiThreadHashing(path, blockSize);
+                // Auto
+                Stopwatch stopWatch = new Stopwatch();
 
-            stopWatch.Start();
-            var result = hash.ComputeHash();
-            stopWatch.Stop();
+                MultiThreadHashing hash = new MultiThreadHashing(path, blockSize);
 
-            ts = stopWatch.Elapsed;
-            elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
-            ts.Hours, ts.Minutes, ts.Seconds,
-            ts.Milliseconds / 10);
-            Console.WriteLine("Speed " + hash.processorCount + " : " + elapsedTime);
+                stopWatch.Start();
+                var result = hash.ComputeHash();
+                stopWatch.Stop();
 
-            // 16
-            Stopwatch stopWatch16 = new Stopwatch();
+                ts = stopWatch.Elapsed;
+                elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                ts.Hours, ts.Minutes, ts.Seconds,
+                ts.Milliseconds / 10);
+                Console.WriteLine("Speed " + hash.processorCount + " : " + elapsedTime);
 
-            MultiThreadHashing hash16 = new MultiThreadHashing(path, 15, blockSize);
+                // 16
+                Stopwatch stopWatch16 = new Stopwatch();
 
-            stopWatch16.Start();
-            hash16.ComputeHash();
-            stopWatch16.Stop();
+                MultiThreadHashing hash16 = new MultiThreadHashing(path, 15, blockSize);
 
-            ts = stopWatch16.Elapsed;
-            elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
-            ts.Hours, ts.Minutes, ts.Seconds,
-            ts.Milliseconds / 10);
-            Console.WriteLine("Speed " + hash16.processorCount + " : " + elapsedTime);
+                stopWatch16.Start();
+                hash16.ComputeHash();
+                stopWatch16.Stop();
 
-            // 32
-            Stopwatch stopWatch32 = new Stopwatch();
+                ts = stopWatch16.Elapsed;
+                elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                ts.Hours, ts.Minutes, ts.Seconds,
+                ts.Milliseconds / 10);
+                Console.WriteLine("Speed " + hash16.processorCount + " : " + elapsedTime);
 
-            MultiThreadHashing hash32 = new MultiThreadHashing(path, 31, blockSize);
+                // 32
+                Stopwatch stopWatch32 = new Stopwatch();
 
-            stopWatch32.Start();
-            hash32.ComputeHash();
-            stopWatch32.Stop();
+                MultiThreadHashing hash32 = new MultiThreadHashing(path, 31, blockSize);
 
-            ts = stopWatch16.Elapsed;
-            elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
-            ts.Hours, ts.Minutes, ts.Seconds,
-            ts.Milliseconds / 10);
-            Console.WriteLine("Speed " + hash32.processorCount + " : " + elapsedTime);
+                stopWatch32.Start();
+                hash32.ComputeHash();
+                stopWatch32.Stop();
 
-            for (int i = 0; i < result.Length; i++)
-                Console.WriteLine("N" + i + " : " + result[i]);
+                ts = stopWatch16.Elapsed;
+                elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                ts.Hours, ts.Minutes, ts.Seconds,
+                ts.Milliseconds / 10);
+                Console.WriteLine("Speed " + hash32.processorCount + " : " + elapsedTime);
+
+                for (int i = 0; i < result.Length; i++)
+                    Console.WriteLine("N" + i + " : " + result[i]);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Ошибка! " + e.Message);
+            }
 
             Console.ReadLine();
         }
