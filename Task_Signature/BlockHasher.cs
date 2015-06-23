@@ -13,7 +13,7 @@ namespace Task_Signature
         /// Стандартная область входного массива
         ///     байтов. (4 Мб)
         /// </summary>
-        public static readonly int DefaultBlockSize = 4096;
+        public static int DefaultBlockSize = 4096;
 
         /// <summary>
         /// Алгоритмы для хеширования
@@ -145,7 +145,7 @@ namespace Task_Signature
         /// <param name="stream">Поток, по которому хешируем</param>
         /// <param name="blockLenght">Размер блоков для хеширования</param>
         /// <returns>Хеш строкой</returns>
-        public string ComputeStringHash(Stream stream, int blockLenght)
+        public string ComputeStringHash(Stream stream, long blockLenght)
         {
             byte[] hash = ComputeHash(stream, blockLenght);
 
@@ -169,7 +169,7 @@ namespace Task_Signature
         /// <param name="stream">Поток, по которому хешируем</param>
         /// <param name="blockLenght">Размер блоков для хеширования</param>
         /// <returns>Вычисляемый хэш-код.</returns>
-        public byte[] ComputeHash(Stream stream, int blockLenght)
+        public byte[] ComputeHash(Stream stream, long blockLenght)
         {
             if (stream == null)
             {
@@ -180,7 +180,8 @@ namespace Task_Signature
             byte[] buffer;
             int bytesRead;
             long totalBytesRead = 0;
-            int blockSize = blockLenght > _bufferSize ? _bufferSize : blockLenght;            
+            int blockSize = blockLenght > (long)_bufferSize ?
+                            _bufferSize : unchecked((int)blockLenght);            
 
             using (HashAlgorithm hashAlgo = CreateHashAlgorithm(_hashAlgorithm))
             {

@@ -13,7 +13,7 @@ namespace Task_Signature
         /// <summary>
         /// Стандартный размер блока (1 Мб)
         /// </summary>
-        public static readonly int DEFAULT_BLOCK_LENGHT = 1024;
+        public static int DEFAULT_BLOCK_LENGHT = 1024;
 
         /// <summary>
         /// Путь к файлу
@@ -23,7 +23,7 @@ namespace Task_Signature
         /// <summary>
         /// Размер блока
         /// </summary>
-        public int blockLength { get; private set; }
+        public long blockLength { get; private set; }
 
         /// <summary>
         /// Количество процессоров
@@ -51,15 +51,16 @@ namespace Task_Signature
         /// <summary>
         /// Мультипоточное хеширование с использованием
         ///     процессов равных количеству логических процессоров
+        ///     или количеству блоков
         /// </summary>
         /// <param name="filePath_">Путь к файлу</param>
         /// <param name="blockLenght_">Размер блока</param>
         public MultiThreadHashing(string filePath_,
-            int blockLenght_ ) :
+            long blockLenght_) :
             this(filePath_, 0, blockLenght_)
         {
-            processorCount = (Environment.ProcessorCount > blockCount ?
-                    blockCount : Environment.ProcessorCount);
+            processorCount = Environment.ProcessorCount > blockCount ?
+                    blockCount : (Environment.ProcessorCount - 1);
         }
 
         /// <summary>
@@ -70,20 +71,33 @@ namespace Task_Signature
         /// <param name="blockLenght_">Размер блока</param>        
         public MultiThreadHashing(string filePath_,
             int processCount_,
-            int blockLenght_)
+            long blockLenght_)
         {
             var file = new FileInfo(filePath_);
+
+            #region Exceptions
             if (!file.Exists)
             {
                 throw new Exception("Файл не найден!");
             }
-            blockCount = (int)(Math.Ceiling((double)file.Length / blockLenght_));
-            filePath = filePath_;           
-
+            if (blockLenght_ > file.Length)
+            {
+                throw new Exception("Размер блока(" + blockLenght_
+                    + ") превышает размер файла (" + file.Length + ")!");
+            }
             if (processCount_ < 0)
             {
-                throw new Exception("Количество процессов не может быть меньше 0!"); ;
+                throw new Exception("Количество процессов не может быть меньше 0!");
             }
+            if (blockLenght_ <= 0)
+            {
+                throw new Exception("Размер блока не может быть меньше или равен 0!");
+            } 
+            #endregion
+        
+            blockCount = (int)(Math.Ceiling((double)(file.Length / blockLenght_)));
+            filePath = filePath_;
+            
             processorCount = processCount_;
 
             blockLength = blockLenght_;
