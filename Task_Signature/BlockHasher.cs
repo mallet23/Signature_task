@@ -29,6 +29,11 @@ namespace Task_Signature
             SHA512
         }
 
+        /// <summary>
+        /// Ввести размер области входного массива
+        ///     байтов(блоков)
+        /// </summary>
+        /// <param name="bufferSize">размер блока в байтах</param>
         public void SetBufferSize(int bufferSize)
         {
             if (bufferSize > 0)
@@ -37,13 +42,16 @@ namespace Task_Signature
                 throw new Exception("Ошибка! Размер буфера"
                     + " не может быть отрицательным!");
         }
+        /// <summary>
+        /// Получить размер области входного массива
+        ///     байтов(блоков)
+        /// </summary>
         public int GetBufferSize()
         {
             return _bufferSize;
         }
         // Размер входного массива байтов
         private int _bufferSize;
-
 
         /// <summary>
         /// Создать алгоритм хеширования
@@ -78,6 +86,7 @@ namespace Task_Signature
                         + "реализации не существует!");
             }
         }
+
         /// <summary>
         /// Получить текущий алгоритм хеширования
         /// </summary>
@@ -86,10 +95,10 @@ namespace Task_Signature
         {
             return _hashAlgorithm;
         }
-        private HashAlgorithms _hashAlgorithm = HashAlgorithms.MD5; // Алгоритм хеширования
+        // Алгоритм хеширования
+        private HashAlgorithms _hashAlgorithm = HashAlgorithms.MD5; 
 
-
-
+        
         /// <summary>
         /// Хеширование по блокам
         /// BlockHasher(BlockHasher.DefaultBlockSize, HashAlgorithms.MD5)
@@ -111,7 +120,6 @@ namespace Task_Signature
         /// </summary>
         /// <param name="bufferSize_">Размер область входного массива байтов.</param>
         /// <param name="algorithm_">Алгоритм хеширования</param>
-
         public BlockHasher(int bufferSize_,
             HashAlgorithms algorithm_ = HashAlgorithms.MD5)
         {
@@ -198,11 +206,9 @@ namespace Task_Signature
             }
             return hash;
         }
-
         #endregion
 
         #region Hash from byte array
-
         /// <summary>
         /// Вычисляет хэш-значение для заданной области заданного массива байтов.
         /// </summary>
@@ -255,6 +261,11 @@ namespace Task_Signature
         }
         #endregion
 
+        /// <summary>
+        /// Преобразование byte array в строковый формат.
+        /// </summary>
+        /// <param name="hash"></param>
+        /// <returns></returns>
         public static string ByteHashToString(byte[] hash)
         {
             return BitConverter.ToString(hash).Replace("-", String.Empty);

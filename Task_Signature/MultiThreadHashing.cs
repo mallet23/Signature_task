@@ -93,7 +93,10 @@ namespace Task_Signature
 
         #endregion
 
-
+        /// <summary>
+        /// Вычислить хеш значения
+        /// </summary>
+        /// <returns></returns>
         public string[] ComputeHash()
         {
             using (FileStream stream = new FileStream(filePath, FileMode.Open,
@@ -118,8 +121,10 @@ namespace Task_Signature
 
         }
 
-
-        void ThreadWork()
+        /// <summary>
+        /// Работа для потока
+        /// </summary>
+        private void ThreadWork()
         {
             using (FileStream stream = new FileStream(filePath, FileMode.Open,
                 FileAccess.Read, FileShare.Read))
@@ -141,9 +146,6 @@ namespace Task_Signature
 
                 } while (_curentBlock < blockCount);
             }
-
-
-
         }
     }
 }
