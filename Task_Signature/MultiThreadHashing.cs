@@ -30,14 +30,23 @@ namespace Task_Signature
         /// </summary>
         public int processorCount { get; private set; }
 
+        /// <summary>
+        /// Ошибки, возникающие в потоках. 
+        /// Имя потока : ошибка
+        /// </summary>      
+        public Queue<KeyValuePair<string, Exception>> exceptions { get; private set; }
+
         // Количество блоков        
         int blockCount;
         // Текущий блок
-        int _curentBlock = 0;
+        int _currentBlock = 0;
         // Массив Хешей
         string[] hashes;
-        // Блокиратор для _curentBlock
+        // Блокиратор для _currentBlock
         object Lock = new object();
+        // Блоки, не захешированные из за ошибки        
+        Queue<int> looseBlocks = new Queue<int>();
+
 
         #region Constructors
         /// <summary>
@@ -92,16 +101,19 @@ namespace Task_Signature
             if (blockLenght_ <= 0)
             {
                 throw new Exception("Размер блока не может быть меньше или равен 0!");
-            } 
-            #endregion
-        
+            }
+
             blockCount = (int)(Math.Ceiling((double)(file.Length / blockLenght_)));
+            if (blockCount <= 0)
+            {
+                throw new Exception("Количество блоков не может быть меньше или равен 0!");
+            }
+            #endregion
+
             filePath = filePath_;
-            
             processorCount = processCount_;
 
-            blockLength = blockLenght_;
-            Console.WriteLine("Количество блоков" + blockCount.ToString());
+            blockLength = blockLenght_;            
             hashes = new string[blockCount];
         }
 
@@ -112,16 +124,20 @@ namespace Task_Signature
         /// </summary>
         /// <returns></returns>
         public string[] ComputeHash()
-        {
+        {            
             using (FileStream stream = new FileStream(filePath, FileMode.Open,
                 FileAccess.Read, FileShare.Read))
             {
+                Thread.CurrentThread.Name = "Main Thread";
                 Thread[] thread = new Thread[processorCount];
+
+                exceptions = new Queue<KeyValuePair<string, Exception>>();
+                looseBlocks = new Queue<int>();
 
                 for (int j = 0; j < processorCount; j++)
                 {
                     thread[j] = new Thread(ThreadWork);
-                    thread[j].Name = "Thread " + j.ToString();
+                    thread[j].Name = "Thread " + (j + 1).ToString();
                     thread[j].Start();
                 }
                 ThreadWork();
@@ -140,26 +156,89 @@ namespace Task_Signature
         /// </summary>
         private void ThreadWork()
         {
-            using (FileStream stream = new FileStream(filePath, FileMode.Open,
-                FileAccess.Read, FileShare.Read))
+            int currentBlock = 0;
+            try
             {
-                var hashAlgorithm = new BlockHasher();
-                do
+                using (FileStream stream = new FileStream(filePath, FileMode.Open,
+                    FileAccess.Read, FileShare.Read))
                 {
-                    int currentBlock = 0;
-                    lock (Lock)
+                    var hashAlgorithm = new BlockHasher();
+                    do
                     {
-                        if (_curentBlock >= blockCount)
-                            break;
-                        currentBlock = _curentBlock;
-                        _curentBlock++;
-                    }
-                    stream.Position = (long)currentBlock * blockLength;
+                        currentBlock = 0;
+                        lock (Lock)
+                        {
+                            if (_currentBlock >= blockCount)
+                                break;
+                            currentBlock = _currentBlock;
+                            _currentBlock++;
+                        }
+                        stream.Position = (long)currentBlock * blockLength;
 
-                    hashes[currentBlock] = hashAlgorithm.ComputeStringHash(stream, blockLength);
+                        hashes[currentBlock] = hashAlgorithm.ComputeStringHash(stream, blockLength);
 
-                } while (_curentBlock < blockCount);
+                    } while (_currentBlock < blockCount);
+                    TryHashLooseBlocks(stream, hashAlgorithm);
+                }
             }
+            catch (ThreadAbortException)
+            {
+                //это исключение возникает, 
+                //  если главный поток хочет завершить приложение
+                //          просто выходим из цикла, и завершаем выполнение
+                return;
+            }
+            catch (Exception ex)
+            {
+                //в процессе работы возникло исключение
+                // заносим ошибку в очередь ошибок, 
+                // предварительно залочив ее
+                lock (looseBlocks)
+                {
+                    exceptions
+                        .Enqueue(new KeyValuePair<string, Exception>
+                            (Thread.CurrentThread.Name, ex));
+                    if (currentBlock < blockCount)
+                        looseBlocks.Enqueue(currentBlock);
+                }
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Пытаемся завершить хеширование блоков, на которых произошла ошибка
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="hashAlgorithm"></param>
+        private void TryHashLooseBlocks(Stream stream, BlockHasher hashAlgorithm)
+        {
+            while (looseBlocks.Any())
+            {
+                int looseBlock = 0;
+                lock (looseBlocks)
+                {
+                    if (looseBlocks.Any())
+                    {
+                        looseBlock = looseBlocks.Dequeue();
+                    }
+                    else
+                        return;
+                }
+                stream.Position = (long)looseBlock * blockLength;
+                hashes[looseBlock] = hashAlgorithm.ComputeStringHash(stream, blockLength);
+            }
+        }
+
+        /// <summary>
+        /// Проверка успешного хеширования.
+        /// </summary>
+        /// <returns></returns>
+        public bool IsSuccess()
+        {
+            // Если остались необработанные блоки
+            if (looseBlocks.Any())
+                return false;
+            return true;
         }
     }
 }
