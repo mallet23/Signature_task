@@ -13,7 +13,8 @@ namespace Task_Signature
     {
         static int Main(string[] args)
         {
-            //    Console.CancelKeyPress += new ConsoleCancelEventHandler(Interrupt);
+            // При ручном прерывании программы: сообщаем об этом
+            Console.CancelKeyPress += new ConsoleCancelEventHandler(Interrupt);
 
             Console.WriteLine("Enter path:");
             var path = Console.ReadLine();
@@ -23,8 +24,8 @@ namespace Task_Signature
             {
                 Console.WriteLine("Не верное значение! " +
                     "Размер блока будет по умолчанию: " +
-                    MultiThreadHashing.DEFAULT_BLOCK_LENGHT + " байт.");
-                blockSize = MultiThreadHashing.DEFAULT_BLOCK_LENGHT;
+                    MultiThreadBlockHashing.DEFAULT_BLOCK_LENGHT + " байт.");
+                blockSize = MultiThreadBlockHashing.DEFAULT_BLOCK_LENGHT;
             }
 
 
@@ -35,7 +36,7 @@ namespace Task_Signature
             {
 
                 //// single 
-                //MultiThreadHashing hash1 = new MultiThreadHashing(path, 0, blockSize);
+                //MultiThreadBlockHashing hash1 = new MultiThreadBlockHashing(path, 0, blockSize);
 
                 //Stopwatch stopWatch1 = new Stopwatch();
                 //stopWatch1.Start();
@@ -49,7 +50,7 @@ namespace Task_Signature
                 //Console.WriteLine("Speed " + hash1.processorCount + " : " + elapsedTime);
 
                 //// 2
-                //MultiThreadHashing hash2 = new MultiThreadHashing(path, 1, blockSize);
+                //MultiThreadBlockHashing hash2 = new MultiThreadBlockHashing(path, 1, blockSize);
 
                 //Stopwatch stopWatch2 = new Stopwatch();
                 //stopWatch2.Start();
@@ -63,7 +64,7 @@ namespace Task_Signature
                 //Console.WriteLine("Speed " + hash2.processorCount + " : " + elapsedTime);
 
                 //// 4
-                //MultiThreadHashing hash4 = new MultiThreadHashing(path, 3, 102400);
+                //MultiThreadBlockHashing hash4 = new MultiThreadBlockHashing(path, 3, 102400);
 
                 //Stopwatch stopWatch4 = new Stopwatch();
                 //stopWatch4.Start();
@@ -77,25 +78,25 @@ namespace Task_Signature
                 //Console.WriteLine("Speed " + hash4.processorCount + " : " + elapsedTime);
 
                 // Auto
-            //    Stopwatch stopWatch = new Stopwatch();
-                Console.WriteLine("Начинаем..."); 
-                MultiThreadHashing hash = new MultiThreadHashing(path, blockSize);
+                //    Stopwatch stopWatch = new Stopwatch();
+                Console.WriteLine("Начинаем...");
+                MultiThreadBlockHashing hash = new MultiThreadBlockHashing(path, blockSize);
 
-           //     stopWatch.Start();
+                //     stopWatch.Start();
                 var result = hash.ComputeHash();
-                
-             //   stopWatch.Stop();              
 
-           //     ts = stopWatch.Elapsed;
-           //     elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
-          //      ts.Hours, ts.Minutes, ts.Seconds,
-          //      ts.Milliseconds / 10);
-           //     Console.WriteLine("Speed " + hash.processorCount + " : " + elapsedTime);
+                //   stopWatch.Stop();              
+
+                //     ts = stopWatch.Elapsed;
+                //     elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                //      ts.Hours, ts.Minutes, ts.Seconds,
+                //      ts.Milliseconds / 10);
+                //     Console.WriteLine("Speed " + hash.processorCount + " : " + elapsedTime);
 
                 //// 16
                 //Stopwatch stopWatch16 = new Stopwatch();
 
-                //MultiThreadHashing hash16 = new MultiThreadHashing(path, 15, blockSize);
+                //MultiThreadBlockHashing hash16 = new MultiThreadBlockHashing(path, 15, blockSize);
 
                 //stopWatch16.Start();
                 //hash16.ComputeHash();
@@ -110,7 +111,7 @@ namespace Task_Signature
                 //// 32
                 //Stopwatch stopWatch32 = new Stopwatch();
 
-                //MultiThreadHashing hash32 = new MultiThreadHashing(path, 31, blockSize);
+                //MultiThreadBlockHashing hash32 = new MultiThreadBlockHashing(path, 31, blockSize);
 
                 //stopWatch32.Start();
                 //hash32.ComputeHash();
@@ -147,9 +148,19 @@ namespace Task_Signature
                 Console.WriteLine("Ошибка! " + e.Message);
 
                 return 1;
-            }    
+            }
 
             return 0;
         }
+
+        /// <summary>
+        /// Сообщение при ручном прерывании программы
+        /// </summary>
+        protected static void Interrupt(object sender, ConsoleCancelEventArgs args)
+        {
+            Console.WriteLine("Операция хэширования была прервана.");
+            Console.WriteLine("Была нажата клавиша: {0}", args.SpecialKey);
+        }
+
     }
 }

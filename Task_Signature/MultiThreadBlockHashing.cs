@@ -8,12 +8,12 @@ using System.Threading;
 
 namespace Task_Signature
 {
-    class MultiThreadHashing
+    class MultiThreadBlockHashing
     {
         /// <summary>
         /// Стандартный размер блока (1 Мб)
         /// </summary>
-        public static int DEFAULT_BLOCK_LENGHT = 1024;
+        public static int DEFAULT_BLOCK_LENGHT = 1048576;
 
         /// <summary>
         /// Путь к файлу
@@ -38,7 +38,7 @@ namespace Task_Signature
 
         // Количество блоков        
         int blockCount;
-        // Текущий блок
+        // Номер текущего блока
         int _currentBlock = 0;
         // Массив Хешей
         string[] hashes;
@@ -54,7 +54,7 @@ namespace Task_Signature
         ///     процессов равных количеству логических процессоров
         /// </summary>
         /// <param name="filePath_">Путь к файлу</param>
-        public MultiThreadHashing(string filePath_) :
+        public MultiThreadBlockHashing(string filePath_) :
             this(filePath_, DEFAULT_BLOCK_LENGHT) { }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace Task_Signature
         /// </summary>
         /// <param name="filePath_">Путь к файлу</param>
         /// <param name="blockLenght_">Размер блока</param>
-        public MultiThreadHashing(string filePath_,
+        public MultiThreadBlockHashing(string filePath_,
             long blockLenght_) :
             this(filePath_, 0, blockLenght_)
         {
@@ -78,7 +78,7 @@ namespace Task_Signature
         /// <param name="filePath_">Путь к файлу</param>
         /// <param name="processCount_">Количество дополнительно создаваемых процессов</param>
         /// <param name="blockLenght_">Размер блока</param>        
-        public MultiThreadHashing(string filePath_,
+        public MultiThreadBlockHashing(string filePath_,
             int processCount_,
             long blockLenght_)
         {

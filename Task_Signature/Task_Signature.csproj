@@ -43,7 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BlockHasher.cs" />
-    <Compile Include="MultiThreadHashing.cs" />
+    <Compile Include="MultiThreadBlockHashing.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

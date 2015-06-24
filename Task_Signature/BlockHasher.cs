@@ -13,7 +13,7 @@ namespace Task_Signature
         /// Стандартная область входного массива
         ///     байтов. (4 Мб)
         /// </summary>
-        public static int DefaultBlockSize = 4096;
+        public static int DefaultBlockSize = 4194304;
 
         /// <summary>
         /// Алгоритмы для хеширования
@@ -64,7 +64,7 @@ namespace Task_Signature
                     return MD5.Create();
 
                 case HashAlgorithms.SHA1:
-                    return SHA1.Create(); 
+                    return SHA1.Create();
 
                 case HashAlgorithms.KeyedHashAlgorithm:
                     return KeyedHashAlgorithm.Create();
@@ -96,9 +96,9 @@ namespace Task_Signature
             return _hashAlgorithm;
         }
         // Алгоритм хеширования
-        private HashAlgorithms _hashAlgorithm = HashAlgorithms.MD5; 
+        private HashAlgorithms _hashAlgorithm = HashAlgorithms.MD5;
 
-        
+
         /// <summary>
         /// Хеширование по блокам
         /// BlockHasher(BlockHasher.DefaultBlockSize, HashAlgorithms.MD5)
@@ -181,7 +181,7 @@ namespace Task_Signature
             int bytesRead;
             long totalBytesRead = 0;
             int blockSize = blockLenght > (long)_bufferSize ?
-                            _bufferSize : unchecked((int)blockLenght);            
+                            _bufferSize : unchecked((int)blockLenght);
 
             using (HashAlgorithm hashAlgo = CreateHashAlgorithm(_hashAlgorithm))
             {
