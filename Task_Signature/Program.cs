@@ -78,7 +78,7 @@ namespace Task_Signature
 
                 // Auto
             //    Stopwatch stopWatch = new Stopwatch();
-
+                Console.WriteLine("Начинаем..."); 
                 MultiThreadHashing hash = new MultiThreadHashing(path, blockSize);
 
            //     stopWatch.Start();

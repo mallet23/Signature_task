@@ -113,7 +113,7 @@ namespace Task_Signature
             filePath = filePath_;
             processorCount = processCount_;
 
-            blockLength = blockLenght_;            
+            blockLength = blockLenght_;
             hashes = new string[blockCount];
         }
 
@@ -124,7 +124,7 @@ namespace Task_Signature
         /// </summary>
         /// <returns></returns>
         public string[] ComputeHash()
-        {            
+        {
             using (FileStream stream = new FileStream(filePath, FileMode.Open,
                 FileAccess.Read, FileShare.Read))
             {
@@ -151,9 +151,8 @@ namespace Task_Signature
 
         }
 
-        /// <summary>
-        /// Работа для потока
-        /// </summary>
+
+        // Работа для потока. Хеширование.    
         private void ThreadWork()
         {
             int currentBlock = 0;
@@ -205,11 +204,8 @@ namespace Task_Signature
             }
         }
 
-        /// <summary>
-        /// Пытаемся завершить хеширование блоков, на которых произошла ошибка
-        /// </summary>
-        /// <param name="stream"></param>
-        /// <param name="hashAlgorithm"></param>
+
+        // Пытаемся завершить хеширование блоков, на которых произошла ошибка        
         private void TryHashLooseBlocks(Stream stream, BlockHasher hashAlgorithm)
         {
             while (looseBlocks.Any())
@@ -224,8 +220,19 @@ namespace Task_Signature
                     else
                         return;
                 }
-                stream.Position = (long)looseBlock * blockLength;
-                hashes[looseBlock] = hashAlgorithm.ComputeStringHash(stream, blockLength);
+                try
+                {
+                    stream.Position = (long)looseBlock * blockLength;
+                    hashes[looseBlock] = hashAlgorithm.ComputeStringHash(stream, blockLength);
+                }
+                catch (Exception ex)
+                {
+                    lock (looseBlocks)
+                    {
+                        // Если не получилось, то возвращаем обратно
+                        looseBlocks.Enqueue(looseBlock);
+                    }
+                }
             }
         }
 

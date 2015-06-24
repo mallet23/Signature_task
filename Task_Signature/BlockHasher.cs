@@ -265,8 +265,8 @@ namespace Task_Signature
         /// <summary>
         /// Преобразование byte array в строковый формат.
         /// </summary>
-        /// <param name="hash"></param>
-        /// <returns></returns>
+        /// <param name="hash">Хеш в байтах</param>
+        /// <returns>Строковое значение хеша</returns>
         public static string ByteHashToString(byte[] hash)
         {
             return BitConverter.ToString(hash).Replace("-", String.Empty);
