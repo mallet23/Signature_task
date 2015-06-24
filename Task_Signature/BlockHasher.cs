@@ -269,7 +269,7 @@ namespace Task_Signature
         /// <returns>Строковое значение хеша</returns>
         public static string ByteHashToString(byte[] hash)
         {
-            return BitConverter.ToString(hash).Replace("-", String.Empty);
+            return BitConverter.ToString(hash);
         }
     }
 }
